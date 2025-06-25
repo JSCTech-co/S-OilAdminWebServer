@@ -1,33 +1,33 @@
 <template>
-    <header class="j-header">
-      <nav class="navbar">
-        <!-- 왼쪽 영역: 로고 및 홈 링크 -->
-        <div class="navbar-left">
-          <router-link to="/" class="logo">DSV-ADMIN</router-link>
-        </div>
+  <header class="j-header">
+    <nav class="navbar">
+      <!-- 왼쪽 영역: 로고 및 홈 링크 -->
+      <div class="navbar-left">
+        <router-link to="/" class="logo">DSV-ADMIN</router-link>
+      </div>
   
-        <!-- 가운데 영역: 라우터 링크 -->
-        <div class="navbar-center">
-          <router-link to="/KpiKopAdmin" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Admin</router-link>
-          <router-link to="/ReportAdmin" class="nav-item" @mouseover="showSubMenu = false">Report Admin</router-link>
-          <router-link to="/" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Filter</router-link>
-          <router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Role-Comp Mapping</router-link>
-          <router-link to="/" class="nav-item" @mouseover="showSubMenu = false">User-Role Mapping</router-link>
-          <router-link to="/" class="nav-item" @mouseover="showSubMenu = false">App Master</router-link>
-          <router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Overview Admin</router-link>
-          <router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Indice Admin</router-link>         
-        </div>
-  
-        <!-- 오른쪽 영역: 로그인 ID 및 로그아웃 버튼 -->
-        <div class="navbar-right">
-          <span>{{ loginUserId }}</span>
-          <button @click="logout">Logout</button>
-        </div>
-      </nav>
-    </header>
-  </template>
-<script>
-
+      <!-- 가운데 영역: 라우터 링크 -->
+      <div class="navbar-center">
+        <router-link to="/KpiKopAdmin" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Admin</router-link>
+        <router-link to="/ReportAdmin" class="nav-item" @mouseover="showSubMenu = false">Report Admin</router-link>
+        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Filter</router-link>-->
+        <router-link to="/RoleCompMapping" class="nav-item" @mouseover="showSubMenu = false">Role-Comp Mapping</router-link>
+        <router-link to="/CompRoleMapping" class="nav-item" @mouseover="showSubMenu = false">Comp-Role Mapping</router-link>
+        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">User-Role Mapping</router-link>-->
+        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">App Master</router-link>-->
+        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Overview Admin</router-link>-->
+        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Indice Admin</router-link> -->    
+      </div>
+      <div class="navbar-right">
+        <button @click="swagger">Swagger</button>
+      </div>
+    </nav>
+  </header>
+</template>
+<script setup>
+const swagger = () => {
+  window.open('http://localhost:8123/swagger-ui/index.html');
+}
 </script>
 <style scoped>
 .j-header {

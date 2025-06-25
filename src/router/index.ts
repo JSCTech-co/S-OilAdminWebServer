@@ -12,6 +12,16 @@ const routes: Array<RouteRecordRaw> = [
     name: 'ReportAdmin',
     component: () => import('@/components/ReportAdmin/ReportAdmin.vue')
   },
+  {
+    path: '/RoleCompMapping',
+    name: 'RoleCompMapping',
+    component: () => import('@/components/RoleCompMapping/RoleCompMapping.vue')
+  },
+  {
+    path: '/CompRoleMapping',
+    name: 'CompRoleMapping',
+    component: () => import('@/components/CompRoleMapping/CompRoleMapping.vue')
+  },
   // ...
 ]
 

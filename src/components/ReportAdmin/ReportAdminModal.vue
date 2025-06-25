@@ -3,54 +3,59 @@
       <div class="modal-content">
         <h3>{{ mode === 'edit' ? 'Report 수정' : 'Report 등록' }}</h3>
   
-        <form @submit.prevent="handleSubmit" class="form-grid">
-         <!-- 상단 그리드 -->
-          <div class="form-grid-2col" style="grid-column: span 2;">
-            <div class="form-field">
+        <form @submit.prevent="handleSubmit">
+          <div :class="['form-row', mode === 'edit' ? 'grid-3' : 'grid-2']">
+            <div class="form-field" v-show="mode === 'edit'" >
               <label>CompSeq</label>
               <input v-model="form.compSeq" disabled />
             </div>
             <div class="form-field">
-              <label>Comp ID *</label>
-              <input v-model="form.compId" disabled required />
+              <label>Comp ID</label>
+              <input v-model="form.compId" :disabled="mode === 'edit'" required />
+            </div>
+            <div class="form-field">
+              <label>isActive</label>
+              <select v-model="form.isActive" required>
+                  <option value="Y">Y</option>
+                  <option value="N">N</option>
+                </select>
             </div>
           </div>
-  
-          <!-- 이후는 2열 그리드 그대로 -->
-          <div class="form-field">
-            <label>CompName</label>
-            <input v-model="form.compName" />
+          <div class="form-row grid-2">
+            <div class="form-field">
+              <label>CompName</label>
+              <input v-model="form.compName" />
+            </div>
+            <div class="form-field">
+              <label>CompName (KOR)</label>
+              <input v-model="form.compNameKorean" />
+            </div>
           </div>
-          <div class="form-field">
-            <label>CompName (KOR)</label>
-            <input v-model="form.compNameKorean" />
+          <div class="form-row grid-2">
+            <div class="form-field">
+              <label>SourceSys</label>
+              <input v-model="form.sourceSys" />
+            </div>
+            <div class="form-field">
+              <label>SourceSysName</label>
+              <input v-model="form.sourceSysName" />
+            </div>
           </div>
-    
-          <div class="form-field">
-            <label>SourceSys</label>
-            <input v-model="form.sourceSys" />
+          <div class="form-row grid-2">
+            <div class="form-field">
+              <label>Owner Dept</label>
+              <input v-model="form.ownerDept" />
+            </div>
+            <div class="form-field">
+              <label>ETL Job Name</label>
+              <input v-model="form.etlJobName" />
+            </div>
           </div>
-          <div class="form-field">
-            <label>Owner Dept</label>
-            <input v-model="form.ownerDept" />
-          </div>
-
-          <div class="form-field">
-            <label>HyperLink</label>
-            <input v-model="form.hyperLink" />
-          </div>
-
-          <div class="form-field">
-            <label>ETL Job Name</label>
-            <input v-model="form.etlJobName" />
-          </div>
-  
-          <div class="form-field">
-            <label>isActive</label>
-            <select v-model="form.isActive" required>
-                <option value="Y">Y</option>
-                <option value="N">N</option>
-              </select>
+          <div class="form-row grid-1">
+            <div class="form-field">
+              <label>HyperLink</label>
+              <input v-model="form.hyperLink" />
+            </div>
           </div>
           <div class="btn-area" style="grid-column: span 2">
             <button type="submit">저장</button>
@@ -79,6 +84,7 @@
     compName: '',
     compNameKorean: '',
     sourceSys: '',
+    sourceSysName: '',
     ownerDept: '',
     hyperLink: '',
     isActive: '',
@@ -102,12 +108,30 @@
     if (props.mode === 'edit') {
       url = 'http://localhost:8123/ReportAdmin/update'
       payload = {
-        
+        compId: form.compId,
+        compName: form.compName,
+        compNameKorean: form.compNameKorean,
+        sourceSys: form.sourceSys,
+        sourceSysName: form.sourceSysName,
+        ownerDept: form.ownerDept,
+        hyperLink: form.hyperLink,
+        etlJobName: form.etlJobName,
+        isActive: form.isActive,
+        updatedBy: 'simoms_dsv'
       }
     } else {
       url = 'http://localhost:8123/ReportAdmin/insert'
       payload = {
-        
+        compId: form.compId,
+        compName: form.compName,
+        compNameKorean: form.compNameKorean,
+        sourceSys: form.sourceSys,
+        sourceSysName: form.sourceSysName,
+        ownerDept: form.ownerDept,
+        hyperLink: form.hyperLink,
+        etlJobName: form.etlJobName,
+        isActive: form.isActive,
+        createdBy: 'simoms_dsv'
       }
     }
   
@@ -174,18 +198,7 @@
     color: #6c757d;
     cursor: not-allowed;
   }
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  
-  .form-grid-3col {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-  }
-  
+
   .form-field label {
     display: block;
     font-weight: bold;
@@ -199,16 +212,21 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  .form-grid-3col {
+  .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+    gap: 12px;
+    margin-bottom: 12px;
   }
-  
-  .form-grid-2col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  .form-row.grid-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-row.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
   }
   </style>
   

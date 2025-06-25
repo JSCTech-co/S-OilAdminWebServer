@@ -36,6 +36,7 @@
               <th>CompName</th>
               <th>CompNameKorean</th>
               <th>SourceSys</th>
+              <th>SourceSysName</th>
               <th>Owner Dept</th>
               <th>HyperLink</th>
               <th>ETLJobName</th>
@@ -50,6 +51,7 @@
               <td>{{ item.compName }}</td>
               <td>{{ item.compNameKorean }}</td>
               <td>{{ item.sourceSys }}</td>
+              <td>{{ item.sourceSysName }}</td>
               <td>{{ item.ownerDept}}</td>
               <td :title="item.hyperLink">
                 <a :href="item.hyperLink" target="_blank" rel="noopener noreferrer">
