@@ -33,13 +33,13 @@
           <tr>
             <th>CID</th>
             <th>Comp ID</th>
-            <th>CompName</th>
             <th>Name (ENG)</th>
             <th>Name (KOR)</th>
             <th>WidgetObjectId</th>
             <th>OverviewWidgetID</th>
             <th>UOM</th>
             <th>UOM (KOR)</th>
+            <th>ETL Job Name</th>
             <th>isActive?</th>
             <th>수정</th>
           </tr>
@@ -48,13 +48,13 @@
           <tr v-for="item in kpis" :key="item.cid">
             <td>{{ item.cid }}</td>
             <td>{{ item.compId }}</td>
-            <td>{{ item.compName }}</td>
-            <td>{{ item.nameEng }}</td>
-            <td>{{ item.nameKor }}</td>
+            <td>{{ item.nameENG }}</td>
+            <td>{{ item.nameKOR }}</td>
             <td>{{ item.widgetObjectId}}</td>
             <td>{{ item.overviewWidgetId}}</td>
             <td>{{ item.uom}}</td>
             <td>{{ item.uomKorean}}</td>
+            <td>{{ item.etljobName }}</td>
             <td>{{ item.isActive }}</td>
             <td><button @click="openEditModal(item)">수정</button></td>
           </tr>
@@ -67,13 +67,13 @@
       <button
         v-for="n in visiblePages"
         :key="n"
-        @click="goToPage(n - 1)"
-        :style="{ fontWeight: page === n - 1 ? 'bold' : 'normal' }"
+        @click="goToPage(n)"
+        :style="{ fontWeight: page === n ? 'bold' : 'normal' }"
       >
         {{ n }}
       </button>
-      <button :disabled="page + 1 >= totalPages" @click="nextPage">다음</button>
-      <span>페이지 {{ page + 1 }} / {{ totalPages }}</span>
+      <button :disabled="page + 1 > totalPages" @click="nextPage">다음</button>
+      <span>페이지 {{ page  }} / {{ totalPages }}</span>
     </div>
 
     <KPIKOPAdminModal
@@ -91,7 +91,7 @@ import { ref, watch, computed } from 'vue'
 import KPIKOPAdminModal from './KPIKOPAdminModal.vue'
 
 const kpis = ref([])
-const page = ref(0)
+const page = ref(1)
 const size = ref(10)
 const totalPages = ref(0)
 
@@ -106,7 +106,8 @@ const searchActive = ref('Y')
 
 const fetchList = async () => {
   try {
-    const url = `http://localhost:8123/KpiKopAdmin/getAllList?page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+    //const url = `http://localhost:8123/KpiKopAdmin/getAllList?page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+    const url = `http://localhost:8123/KpiKopAdmin/select?pageNo=${page.value}&pageSize=${size.value}&isActive=${searchActive.value}`
     const res = await fetch(url)
     const data = await res.json()
     kpis.value = data.content
@@ -120,7 +121,8 @@ const fetchSearch = async () => {
   try {
     const col = searchColumn.value
     const kwd = encodeURIComponent(searchKeyword.value)
-    const url = `http://localhost:8123/KpiKopAdmin/searchList?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+    //const url = `http://localhost:8123/KpiKopAdmin/searchList?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+    const url = `http://localhost:8123/KpiKopAdmin/select?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
     const res = await fetch(url)
     const data = await res.json()
     kpis.value = data.content
@@ -151,10 +153,10 @@ const nextPage = () => {
   if (page.value + 1 < totalPages.value) page.value++
 }
 const goToPage = (n) => {
-  if (n >= 0 && n < totalPages.value) page.value = n
+  if (n >= 0 && n <= totalPages.value) page.value = n
 }
 const visiblePages = computed(() => {
-  const currentGroup = Math.floor(page.value / 10)
+  const currentGroup = Math.floor((page.value-1) / 10)
   const start = currentGroup * 10 + 1
   const end = Math.min(start + 9, totalPages.value)
   return Array.from({ length: end - start + 1 }, (_, i) => start + i)
@@ -176,7 +178,7 @@ const openEditModal = (row) => {
 }
 const handleSaved = () => {
   showModal.value = false
-  page.value = 0
+  page.value = 1
   isSearching.value ? fetchSearch() : fetchList()
 }
 
@@ -277,27 +279,32 @@ table td:nth-child(2) {
   width: 120px;
 }
 
-table th:nth-child(3), /* CompName */
+table th:nth-child(3), /* Name (ENG) */
 table td:nth-child(3),
-table th:nth-child(4), /* Name (ENG) */
-table td:nth-child(4),
-table th:nth-child(5), /* Name (KOR) */
-table td:nth-child(5) {
-  width: 180px;
+table th:nth-child(4), /* Name (KOR) */
+table td:nth-child(4) {
+  width: 350px;
 }
 
-table th:nth-child(6), /* WidgetObjectId */
-table td:nth-child(6),
-table th:nth-child(7), /* OverviewWidgetID */
-table td:nth-child(7) {
-  width: 200px;
+table th:nth-child(5), /* WidgetObjectId */
+table td:nth-child(5),
+table th:nth-child(6), /* OverviewWidgetID */
+table td:nth-child(6) {
+  width: 125px;
 }
 
-table th:nth-child(8), /* UOM */
-table td:nth-child(8),
-table th:nth-child(9), /* UOM Korean */
-table td:nth-child(9) {
+table th:nth-child(7), /* UOM */
+table td:nth-child(7),
+table th:nth-child(8), /* UOM Korean */
+table td:nth-child(8) {
   width: 100px;
 }
-
+table th:nth-child(9), /* ETL Job Name */
+table td:nth-child(9){
+  width: 250px;
+}
+table th:nth-child(10), /* ETL Job Name */
+table td:nth-child(10){
+  width: 70px;
+}
 </style>

@@ -22,6 +22,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'CompRoleMapping',
     component: () => import('@/components/CompRoleMapping/CompRoleMapping.vue')
   },
+  {
+    path: '/KpiKopFilterAdmin',
+    name: 'KpiKopFilterAdmin',
+    component: () => import('@/components/KPIKOPFilterAdmin/KpiKopFilterAdmin.vue')
+  },
+
   // ...
 ]
 

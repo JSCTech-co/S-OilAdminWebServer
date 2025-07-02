@@ -10,10 +10,10 @@
       <div class="navbar-center">
         <router-link to="/KpiKopAdmin" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Admin</router-link>
         <router-link to="/ReportAdmin" class="nav-item" @mouseover="showSubMenu = false">Report Admin</router-link>
-        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Filter</router-link>-->
+        <router-link to="/KpiKopFilterAdmin" class="nav-item" @mouseover="showSubMenu = false">KPI/KOP Filter</router-link>
         <router-link to="/RoleCompMapping" class="nav-item" @mouseover="showSubMenu = false">Role-Comp Mapping</router-link>
         <router-link to="/CompRoleMapping" class="nav-item" @mouseover="showSubMenu = false">Comp-Role Mapping</router-link>
-        <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">User-Role Mapping</router-link>-->
+        <!--<router-link to="/roleAdmin" class="nav-item" @mouseover="showSubMenu = false">Role Admin</router-link>-->
         <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">App Master</router-link>-->
         <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Overview Admin</router-link>-->
         <!--<router-link to="/" class="nav-item" @mouseover="showSubMenu = false">Indice Admin</router-link> -->    

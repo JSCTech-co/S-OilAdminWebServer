@@ -8,6 +8,7 @@
         <option value="compId">Comp ID</option>
         <option value="compType">Comp Type</option>
         <option value="compName">Comp Name</option>
+        <option value="compNameKorean">Comp Name Kor</option>
       </select>
       <input v-model="searchKeyword" placeholder="검색어 입력" @keydown.enter="applySearch"/>
       <button @click="applySearch">검색</button>
@@ -29,6 +30,7 @@
           <th>Comp ID</th>
           <th>Comp Type</th>
           <th>Comp Name</th>
+          <th>Comp Name Kor</th>
           <th>Role Count</th>
           <th>Action</th>
         </tr>
@@ -38,6 +40,7 @@
           <td>{{ item.compId    }}</td>
           <td>{{ item.compType  }}</td>
           <td>{{ item.compName  }}</td>
+          <td>{{ item.compNameKorean  }}</td>
           <td>{{ item.roleCount }}</td>
           <td>
             <button class="edit-button" @click="openEditModal(item)">Edit</button>
@@ -103,6 +106,7 @@ const fetchCompData = async () => {
       compId: comp.compId,
       compType: comp.compType,
       compName: comp.compName,
+      compNameKorean: comp.compNameKorean,
       roleCount: comp.roleCount,
     }))
     totalPages.value = data.totalPages
