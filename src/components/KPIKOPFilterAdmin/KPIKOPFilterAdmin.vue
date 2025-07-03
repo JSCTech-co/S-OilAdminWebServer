@@ -1,3 +1,4 @@
+
 <template>
   <div class="container">
     <h2>KPI/KOP Filter Admin</h2>
@@ -30,7 +31,6 @@
         </thead>
         <tbody>
           <template v-for="(item, index) in kpis" :key="item.compId">
-            <!-- Comp 테이블 행 -->
             <tr @click="toggleAccordion(index)">
               <td>{{ item.compId }}</td>
               <td>{{ item.compType }}</td>
@@ -38,53 +38,50 @@
               <td>{{ item.compNameKorean }}</td>
               <td>{{ item.filterCount }}</td>
             </tr>
-
-            <!-- 아코디언 하위 -->
             <tr v-if="openedIndex === index">
               <td colspan="5">
                 <div class="filter-section">
-                  <!-- 필터가 없는 경우 -->
                   <div v-if="item.filterCount === 0" class="filter-empty">
                     <div class="filter-header">
                       <span>등록된 필터가 없습니다.</span>
                       <button @click.stop="openCreateFilterModal(item)">Filter 등록</button>
                     </div>
                   </div>
-
-                  <!-- 필터가 있는 경우 -->
                   <div v-else>
-                    <!-- ✅ 테이블 상단 우측에 등록 버튼 -->
                     <div class="filter-header">
-                      <span></span> <!-- 왼쪽 공간 비움 -->
+                      <span></span>
                       <button @click.stop="openCreateFilterModal(item)">Filter 등록</button>
                     </div>
-
                     <table class="filter-table">
                       <thead>
                         <tr>
                           <th>Filter ID</th>
+                          <th>Type</th>
                           <th>Filter Name</th>
                           <th>Label</th>
-                          <th>Type</th>
-                          <th>Seq</th>
-                          <th>filterObjId</th>
-                          <th>filterQlikId</th>
+                          <th>Field Name</th>
+                          <th>Widget ID</th>
                           <th>VarOption ID</th>
+                          <th>ObjId</th>
+                          <th>QlikId</th>
                           <th>Page name</th>
+                          <th>Seq</th>
                           <th>수정</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr v-for="filter in item.filters" :key="filter.filterId">
                           <td>{{ filter.filterId }}</td>
+                          <td>{{ filter.filterType }}</td>
                           <td>{{ filter.filterName }}</td>
                           <td>{{ filter.filterLabel }}</td>
-                          <td>{{ filter.filterType }}</td>
-                          <td>{{ filter.filterSequence }}</td>
+                          <td>{{ filter.fieldName }}</td>
+                          <td>{{ filter.widgetObjectId }}</td>
+                          <td>{{ filter.filterVariableOptionId }}</td>
                           <td>{{ filter.filterObjId }}</td>
                           <td>{{ filter.filterQlikId }}</td>
-                          <td>{{ filter.filterVariableOptionId }}</td>
                           <td>{{ filter.pageName }}</td>
+                          <td>{{ filter.filterSequence }}</td>
                           <td><button @click.stop="openEditFilterModal(filter, item)">수정</button></td>
                         </tr>
                       </tbody>
@@ -99,7 +96,7 @@
     </div>
 
     <div class="pagination">
-      <button :disabled="page === 0" @click="prevPage">이전</button>
+      <button :disabled="page === 1" @click="prevPage">이전</button>
       <button
         v-for="n in visiblePages"
         :key="n"
@@ -116,6 +113,7 @@
       v-if="showModal"
       :mode="formMode"
       :initialData="selectedData"
+      :compData="selectedComp"
       @close="showModal = false"
       @saved="handleSaved"
     />
@@ -139,11 +137,10 @@ const isSearching = ref(false)
 const showModal = ref(false)
 const formMode = ref('insert')
 const selectedData = ref({})
-const searchActive = ref('Y')
+const selectedComp = ref(null)
 
 const fetchList = async () => {
   try {
-    //const url = `http://localhost:8123/KpiKopAdmin/select?pageNo=${page.value}&pageSize=${size.value}&isActive=${searchActive.value}`
     const url = `http://localhost:8123/kpikopfilter/select?pageNo=${page.value}&pageSize=${size.value}`
     const res = await fetch(url)
     const data = await res.json()
@@ -157,9 +154,6 @@ const fetchList = async () => {
 
 const fetchSearch = async () => {
   try {
-    const col = searchColumn.value
-    const kwd = encodeURIComponent(searchKeyword.value)
-    //const url = `http://localhost:8123/KpiKopAdmin/searchList?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
     const url = `http://localhost:8123/kpikopfilter/select?pageNo=${page.value}&pageSize=${size.value}&searchType=${searchColumn.value}&searchKeyword=${searchKeyword.value}`
     const res = await fetch(url)
     const data = await res.json()
@@ -182,19 +176,18 @@ const resetSearch = () => {
   isSearching.value = false
   searchKeyword.value = ''
   searchColumn.value = 'compId'
-  searchActive.value = 'Y' 
   openedIndex.value = null
   fetchList()
 }
 
 const prevPage = () => {
-  if (page.value > 0) page.value--
+  if (page.value > 1) page.value--
 }
 const nextPage = () => {
-  if (page.value + 1 < totalPages.value) page.value++
+  if (page.value < totalPages.value) page.value++
 }
 const goToPage = (n) => {
-  if (n >= 0 && n <= totalPages.value) page.value = n
+  if (n >= 1 && n <= totalPages.value) page.value = n
 }
 const visiblePages = computed(() => {
   const currentGroup = Math.floor((page.value-1) / 10)
@@ -208,34 +201,32 @@ watch(page, () => {
   openedIndex.value = null;
 })
 
-const openInsertModal = () => {
-  formMode.value = 'insert'
-  selectedData.value = {}
-  showModal.value = true
-}
-const openEditModal = (row) => {
-  formMode.value = 'edit'
-  selectedData.value = { ...row }
-  showModal.value = true
-}
 const handleSaved = () => {
   showModal.value = false
-  page.value = 1
   isSearching.value ? fetchSearch() : fetchList()
 }
+
 function toggleAccordion(index) {
   openedIndex.value = openedIndex.value === index ? null : index
-  console.log(openedIndex.value);
 }
+
 function openCreateFilterModal(comp) {
-  // 등록 모달 열기
+  formMode.value = 'insert'
+  selectedData.value = {}
+  selectedComp.value = comp
+  showModal.value = true
 }
 
 function openEditFilterModal(filter, comp) {
-  // 수정 모달 열기
+  formMode.value = 'edit'
+  selectedData.value = { ...filter }
+  selectedComp.value = comp
+  showModal.value = true
 }
+
 fetchList()
 </script>
+
 
 <style scoped>
 .container {

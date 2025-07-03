@@ -67,17 +67,17 @@
       </div>
   
       <div class="pagination">
-        <button :disabled="page === 0" @click="prevPage">이전</button>
+        <button :disabled="page === 1" @click="prevPage">이전</button>
         <button
           v-for="n in visiblePages"
           :key="n"
-          @click="goToPage(n - 1)"
-          :style="{ fontWeight: page === n - 1 ? 'bold' : 'normal' }"
+          @click="goToPage(n)"
+          :style="{ fontWeight: page === n ? 'bold' : 'normal' }"
         >
           {{ n }}
         </button>
-        <button :disabled="page + 1 >= totalPages" @click="nextPage">다음</button>
-        <span>페이지 {{ page + 1 }} / {{ totalPages }}</span>
+        <button :disabled="page >= totalPages" @click="nextPage">다음</button>
+        <span>페이지 {{ page }} / {{ totalPages }}</span>
       </div>
   
       <ReportAdminModal
@@ -95,7 +95,7 @@
   import ReportAdminModal from './ReportAdminModal.vue'
   
   const reports = ref([])
-  const page = ref(0)
+  const page = ref(1)
   const size = ref(10)
   const totalPages = ref(0)
   
@@ -110,7 +110,7 @@
   
   const fetchList = async () => {
     try {
-      const url = `http://localhost:8123/ReportAdmin/getAllList?page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+      const url = `http://localhost:8123/ReportAdmin/select?pageNo=${page.value}&pageSize=${size.value}&isActive=${searchActive.value}`
       const res = await fetch(url)
       const data = await res.json()
       reports.value = data.content
@@ -124,7 +124,10 @@
     try {
       const col = searchColumn.value
       const kwd = encodeURIComponent(searchKeyword.value)
-      const url = `http://localhost:8123/ReportAdmin/searchList?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+      let url = `http://localhost:8123/ReportAdmin/select?pageNo=${page.value}&pageSize=${size.value}&isActive=${searchActive.value}`
+      if(col && kwd){
+        url += `&searchType=${searchColumn.value}&searchKeyword=${searchKeyword.value}`;
+      }
       const res = await fetch(url)
       const data = await res.json()
       reports.value = data.content
@@ -135,28 +138,28 @@
   }
   
   const search = () => {
-    page.value = 0
-    isSearching.value = true
-    fetchSearch()
-  }
+  page.value = 1
+  isSearching.value = true
+  fetchSearch()
+}
   
   const resetSearch = () => {
-    page.value = 0
-    isSearching.value = false
-    searchKeyword.value = ''
-    searchActive.value = 'Y' 
-    fetchList()
-  }
+  page.value = 1
+  isSearching.value = false
+  searchKeyword.value = ''
+  searchActive.value = 'Y' 
+  fetchList()
+}
   
   const prevPage = () => {
-    if (page.value > 0) page.value--
-  }
-  const nextPage = () => {
-    if (page.value + 1 < totalPages.value) page.value++
-  }
-  const goToPage = (n) => {
-    if (n >= 0 && n < totalPages.value) page.value = n
-  }
+  if (page.value > 1) page.value--
+}
+const nextPage = () => {
+  if (page.value < totalPages.value) page.value++
+}
+const goToPage = (n) => {
+  if (n >= 1 && n <= totalPages.value) page.value = n
+}
   const visiblePages = computed(() => {
     const currentGroup = Math.floor(page.value / 10)
     const start = currentGroup * 10 + 1
@@ -179,10 +182,9 @@
     showModal.value = true
   }
   const handleSaved = () => {
-    showModal.value = false
-    page.value = 0
-    isSearching.value ? fetchSearch() : fetchList()
-  }
+  showModal.value = false
+  isSearching.value ? fetchSearch() : fetchList()
+}
   
   fetchList()
   </script>
@@ -281,8 +283,12 @@
   table td:nth-child(4){
     width: 200px;
   }
-  table th:nth-child(7),
-  table td:nth-child(7) {
+  table th:nth-child(5),
+  table td:nth-child(5){
+    width: 150px;
+  }
+  table th:nth-child(8),
+  table td:nth-child(8) {
     width: 250px;
     max-width: 500px;
     overflow: hidden;
@@ -291,7 +297,7 @@
     position: relative;
   }
 
-  table td:nth-child(7):hover::after {
+  table td:nth-child(8):hover::after {
     content: attr(title);
     position: absolute;
     background: #fff;
@@ -305,13 +311,12 @@
     max-width: 600px;
     box-shadow: 0 0 4px rgba(0,0,0,0.2);
   }
-  table th:nth-child(9),
-  table td:nth-child(9){
+  table th:nth-child(10),
+  table td:nth-child(10),
+  table th:nth-child(11),
+  table td:nth-child(11){
     width: 80px;
   }
-  table th:nth-child(10),
-  table td:nth-child(10){
-    width: 70px;
-  }
+  
   </style>
   

@@ -1,88 +1,78 @@
 <template>
   <div class="modal">
     <div class="modal-content">
-      <h3>{{ mode === 'edit' ? 'KPI/KOP 수정' : 'KPI/KOP 등록' }}</h3>
+      <h3>{{ mode === 'edit' ? 'Edit Filter' : 'Create New Filter' }}</h3>
+
+      <div class="comp-info-grid">
+        <div class="form-field">
+          <label>Comp ID</label>
+          <input :value="compData.compId" disabled />
+        </div>
+        <div class="form-field">
+          <label>Comp Type</label>
+          <input :value="compData.compType" disabled />
+        </div>
+        <div class="form-field">
+          <label>Comp Name</label>
+          <input :value="compData.compName" disabled />
+        </div>
+        <div class="form-field">
+          <label>Comp Name (KOR)</label>
+          <input :value="compData.compNameKorean" disabled />
+        </div>
+      </div>
+
+      <hr class="divider" />
 
       <form @submit.prevent="handleSubmit" class="form-grid">
-       <!-- 상단 그리드 (edit: 3열, insert: 2열) -->
-        <div v-if="mode === 'edit'" class="form-grid-3col" style="grid-column: span 2;">
-          <div class="form-field">
-            <label>CID</label>
-            <input v-model="form.cid" disabled />
-          </div>
-          <div class="form-field">
-            <label>Comp ID *</label>
-            <input v-model="form.compId" disabled required />
-          </div>
-          <div class="form-field">
-            <label>Comp Type *</label>
-            <select v-model="form.compType" disabled required>
-              <option value="KPI">KPI</option>
-              <option value="KOP">KOP</option>
-            </select>
-          </div>
-        </div>
-
-        <div v-else class="form-grid-2col" style="grid-column: span 2;">
-          <div class="form-field">
-            <label>Comp ID *</label>
-            <input v-model="form.compId" required />
-          </div>
-          <div class="form-field">
-            <label>Comp Type *</label>
-            <select v-model="form.compType" required>
-              <option value="KPI">KPI</option>
-              <option value="KOP">KOP</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- 이후는 2열 그리드 그대로 -->
+        <!-- Filter Fields -->
         <div class="form-field">
-          <label>Name (KOR)</label>
-          <input v-model="form.nameKOR" />
+          <label>Filter Name *</label>
+          <input v-model="form.filterName" required />
         </div>
         <div class="form-field">
-          <label>Name (ENG)</label>
-          <input v-model="form.nameENG" />
-        </div>
-
-        <div class="form-field">
-          <label>UOM</label>
-          <input v-model="form.uom" />
+          <label>Filter Label</label>
+          <input v-model="form.filterLabel" />
         </div>
         <div class="form-field">
-          <label>UOM (Korean)</label>
-          <input v-model="form.uomKorean" />
+          <label>Filter Type *</label>
+          <select v-model="form.filterType" required>
+            <option value="daterange">Date Range</option>
+            <option value="DropDown">Dropdown</option>
+            <option value="hierarchy">Hierarchy</option>
+            <option value="multiSelectDropdown">Multi-Select Dropdown</option>
+          </select>
         </div>
-
+        <div class="form-field">
+          <label>Field Name </label>
+          <input v-model="form.fieldName" required />
+        </div>
+        <div class="form-field">
+          <label>Filter Sequence *</label>
+          <input v-model.number="form.filterSequence" type="number" required />
+        </div>
         <div class="form-field">
           <label>Widget Object ID</label>
           <input v-model="form.widgetObjectId" />
         </div>
         <div class="form-field">
-          <label>Overview Widget ID</label>
-          <input v-model="form.overviewWidgetId" />
+          <label>Filter Object ID</label>
+          <input v-model="form.filterObjId" />
+        </div>
+        <div class="form-field">
+          <label>Filter Qlik ID</label>
+          <input v-model="form.filterQlikId" />
+        </div>
+        <div class="form-field">
+          <label>Page Name</label>
+          <input v-model="form.pageName" />
         </div>
 
-        <div class="form-field">
-          <label>ETL Job Name</label>
-          <input v-model="form.etlJobName" />
-        </div>
-
-        <div class="form-field">
-          <label>isActive</label>
-          <select v-model="form.isActive" required>
-              <option value="Y">Y</option>
-              <option value="N">N</option>
-            </select>
-        </div>
         <div class="btn-area" style="grid-column: span 2">
-          <button type="submit">저장</button>
-          <button type="button" @click="$emit('close')">취소</button>
+          <button type="submit">Save</button>
+          <button type="button" @click="$emit('close')">Cancel</button>
         </div>
       </form>
-
     </div>
   </div>
 </template>
@@ -91,86 +81,81 @@
 import { reactive, watch } from 'vue'
 
 const props = defineProps({
-  mode: { type: String, default: 'insert' }, // 'insert' or 'edit'
-  initialData: { type: Object, default: () => ({}) }
+  mode: { type: String, default: 'insert' },
+  initialData: { type: Object, default: () => ({}) },
+  compData: { type: Object, required: true }
 })
 
 const emit = defineEmits(['close', 'saved'])
 
 const form = reactive({
-  cid: '',
-  compId: '',
-  compType: 'KPI',
-  uom: '',
-  uomKorean: '',
-  etlJobName: '',
-  nameKor: '',
-  nameEng: '',
-  widgetObjectId: '',
-  overviewWidgetId: '',
-  isActive: '',
+  filterId: null,
+  filterName: '',
+  filterLabel: '',
+  filterType: 'daterange',
+  filterSequence: 10,
+  filterObjId: '',
+  filterQlikId: '',
+  pageName: '',
+  fieldName: '',
+  widgetObjectId: ''
 })
 
 watch(() => props.initialData, (data) => {
-  if (props.mode === 'edit') {
-    Object.assign(form, data)
+  if (props.mode === 'edit' && data) {
+    Object.assign(form, data);
+    if (data.filterType) {
+      const lowerCaseFilterType = data.filterType.toLowerCase();
+      if (['daterange', 'dropdown', 'hierarchy', 'multiselectdropdown'].includes(lowerCaseFilterType)) {
+        // Find the correct value from the options to preserve casing in the form
+        const options = ['daterange', 'DropDown', 'hierarchy', 'multiSelectDropdown'];
+        form.filterType = options.find(opt => opt.toLowerCase() === lowerCaseFilterType) || 'daterange';
+      } else {
+        form.filterType = 'daterange'; // Default value if no match
+      }
+    }
   } else {
-    Object.keys(form).forEach(k => form[k] = '')
-    form.compType = 'KPI'
-    form.type = 'KPI'
+    // Reset form for insert mode
+    Object.keys(form).forEach(k => {
+      form[k] = null; // Reset all fields
+    });
+    form.filterType = 'daterange';
+    form.filterSequence = 1;
   }
-}, { immediate: true })
-
+}, { immediate: true, deep: true })
 
 const handleSubmit = async () => {
-  let url = ''
-  let payload = {}
-
-  if (props.mode === 'edit') {
-    url = 'http://localhost:8123/KpiKopAdmin/update'
-    payload = {
-      cid: form.cid,
-      compId: form.compId,         // 수정 금지되어 있지만 전달 필요
-      compType: form.compType,     // 수정 금지되어 있지만 전달 필요
-      nameEng: form.nameENG,
-      nameKor: form.nameKOR,
-      widgetObjectId: form.widgetObjectId,
-      overviewWidgetId: form.overviewWidgetId,
-      uom: form.uom,
-      uomKorean: form.uomKorean,
-      etlJobName: form.etlJobName,
-      UpdatedBy: 'simoms_dsv',
-      isActive: form.isActive
-    }
-  } else {
-    url = 'http://localhost:8123/KpiKopAdmin/insert'
-    payload = {
-      compId: form.compId,
-      compType: form.compType,
-      nameEng: form.nameENG,
-      nameKor: form.nameKOR,
-      widgetObjectId: form.widgetObjectId,
-      overviewWidgetId: form.overviewWidgetId,
-      uom: form.uom,
-      uomKorean: form.uomKorean,
-      etlJobName: form.etlJobName,
-    }
+  const isEdit = props.mode === 'edit'
+  const url = `http://localhost:8123/kpikopfilter/${isEdit ? 'update' : 'insert'}`
+  
+  const payload = {
+    ...form,
+    compId: props.compData.compId,
+    compType: props.compData.compType
+  }
+  if (!isEdit) {
+    delete payload.filterId
   }
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
 
-  if (res.ok) {
-    emit('saved')
-    emit('close')
-  } else {
-    alert('저장 실패')
+    if (res.ok) {
+      emit('saved')
+      emit('close')
+    } else {
+      const errorText = await res.text()
+      alert(`Failed to save: ${errorText}`)
+    }
+  } catch (error) {
+    console.error('Error saving filter:', error)
+    alert('An error occurred while saving the filter.')
   }
 }
-
 </script>
 
 <style scoped>
@@ -211,49 +196,31 @@ const handleSubmit = async () => {
 }
 .btn-area {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 8px;
   margin-top: 20px;
 }
-input:disabled,
-select:disabled {
-  background-color: #e9ecef;
-  color: #6c757d;
-  cursor: not-allowed;
-}
-.form-grid {
+
+.comp-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-}
-
-.form-grid-3col {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-}
-
-.form-field label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 4px;
-}
-
-.form-field input,
-.form-field select {
-  width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
+  margin-bottom: 16px;
+  background-color: #f7f7f7;
+  padding: 12px;
   border-radius: 4px;
 }
-.form-grid-3col {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
+
+.divider {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.form-grid-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+input:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
 }
 </style>

@@ -63,7 +63,7 @@
     </div>
 
     <div class="pagination">
-      <button :disabled="page === 0" @click="prevPage">이전</button>
+      <button :disabled="page === 1" @click="prevPage">이전</button>
       <button
         v-for="n in visiblePages"
         :key="n"
@@ -72,7 +72,7 @@
       >
         {{ n }}
       </button>
-      <button :disabled="page + 1 > totalPages" @click="nextPage">다음</button>
+      <button :disabled="page >= totalPages" @click="nextPage">다음</button>
       <span>페이지 {{ page  }} / {{ totalPages }}</span>
     </div>
 
@@ -122,7 +122,10 @@ const fetchSearch = async () => {
     const col = searchColumn.value
     const kwd = encodeURIComponent(searchKeyword.value)
     //const url = `http://localhost:8123/KpiKopAdmin/searchList?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
-    const url = `http://localhost:8123/KpiKopAdmin/select?column=${col}&keyword=${kwd}&page=${page.value}&size=${size.value}&isActive=${searchActive.value}`
+    let url = `http://localhost:8123/KpiKopAdmin/select?pageNo=${page.value}&pageSize=${size.value}&isActive=${searchActive.value}`
+    if(col && kwd){
+      url += `&searchType=${searchColumn.value}&searchKeyword=${searchKeyword.value}`;
+    }
     const res = await fetch(url)
     const data = await res.json()
     kpis.value = data.content
@@ -133,13 +136,13 @@ const fetchSearch = async () => {
 }
 
 const search = () => {
-  page.value = 0
+  page.value = 1
   isSearching.value = true
   fetchSearch()
 }
 
 const resetSearch = () => {
-  page.value = 0
+  page.value = 1
   isSearching.value = false
   searchKeyword.value = ''
   searchActive.value = 'Y' 
@@ -147,13 +150,13 @@ const resetSearch = () => {
 }
 
 const prevPage = () => {
-  if (page.value > 0) page.value--
+  if (page.value > 1) page.value--
 }
 const nextPage = () => {
-  if (page.value + 1 < totalPages.value) page.value++
+  if (page.value < totalPages.value) page.value++
 }
 const goToPage = (n) => {
-  if (n >= 0 && n <= totalPages.value) page.value = n
+  if (n >= 1 && n <= totalPages.value) page.value = n
 }
 const visiblePages = computed(() => {
   const currentGroup = Math.floor((page.value-1) / 10)
@@ -178,7 +181,6 @@ const openEditModal = (row) => {
 }
 const handleSaved = () => {
   showModal.value = false
-  page.value = 1
   isSearching.value ? fetchSearch() : fetchList()
 }
 
