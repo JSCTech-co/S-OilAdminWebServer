@@ -82,7 +82,10 @@
                           <td>{{ filter.filterQlikId }}</td>
                           <td>{{ filter.pageName }}</td>
                           <td>{{ filter.filterSequence }}</td>
-                          <td><button @click.stop="openEditFilterModal(filter, item)">수정</button></td>
+                          <td>
+                            <button @click.stop="openEditFilterModal(filter, item)">수정</button>
+                            <button class="del-btn" @click.stop="deleteFilter(filter)">삭제</button>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -224,6 +227,19 @@ function openEditFilterModal(filter, comp) {
   showModal.value = true
 }
 
+const deleteFilter = async (filter) => {
+  if(!confirm(`${filter.filterName} 필터를 삭제하시겠습니까?`)){
+    return;
+  }
+  try {
+    const url = `http://localhost:8123/kpikopfilter/delete?filterId=${filter.filterId}`
+    const res = await fetch(url)
+    fetchList()
+  } catch (err) {
+    console.error('삭제 실패', err)
+  }
+}
+
 fetchList()
 </script>
 
@@ -315,5 +331,9 @@ button {
   justify-content: space-between; /* 우측 정렬 */
   align-items: center;
   margin-bottom: 8px;
+}
+.del-btn{
+  margin-left: 10px;
+  background-color: #ff4500;
 }
 </style>

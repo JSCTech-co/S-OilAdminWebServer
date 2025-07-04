@@ -27,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'KpiKopFilterAdmin',
     component: () => import('@/components/KPIKOPFilterAdmin/KpiKopFilterAdmin.vue')
   },
+  {
+    path: '/AppMaster',
+    name: 'AppMaster',
+    component: () => import('@/components/AppMaster/AppMaster.vue')
+  },
 
   // ...
 ]

@@ -128,15 +128,36 @@ const handleSubmit = async () => {
   const isEdit = props.mode === 'edit'
   const url = `http://localhost:8123/kpikopfilter/${isEdit ? 'update' : 'insert'}`
   
-  const payload = {
-    ...form,
-    compId: props.compData.compId,
-    compType: props.compData.compType
-  }
-  if (!isEdit) {
-    delete payload.filterId
-  }
+  let payload;
 
+  if (isEdit) {
+    payload = {
+      filterId: form.filterId,               // 수정용 필수
+      filterType: form.filterType,
+      filterName: form.filterName,
+      fieldName: form.fieldName,
+      filterLabel: form.filterLabel,
+      widgetObjectId: form.widgetObjectId,
+      filterObjId: form.filterObjId,
+      filterQlikId: form.filterQlikId,
+      filterSequence: form.filterSequence,
+      pageName: form.pageName
+    };
+  } else {
+    payload = {
+      compId: props.compData.compId,         // 등록용 필수
+      filterType: form.filterType,
+      filterName: form.filterName,
+      fieldName: form.fieldName,
+      filterLabel: form.filterLabel,
+      widgetObjectId: form.widgetObjectId,
+      filterObjId: form.filterObjId,
+      filterQlikId: form.filterQlikId,
+      filterSequence: form.filterSequence,
+      pageName: form.pageName
+    };
+  }
+  console.log(payload);
   try {
     const res = await fetch(url, {
       method: 'POST',

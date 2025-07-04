@@ -67,7 +67,7 @@
 
         <div class="form-field">
           <label>ETL Job Name</label>
-          <input v-model="form.etlJobName" />
+          <input v-model="form.etljobName" />
         </div>
 
         <div class="form-field">
