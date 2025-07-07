@@ -27,7 +27,8 @@
           <th>App Type</th>
           <th>App ID</th>
           <th>Comp Count</th>
-          <th>수정</th>
+          <th>Edit</th>
+          <th>Comp Mapping</th>
         </tr>
       </thead>
       <tbody>
@@ -39,6 +40,9 @@
           <td>{{ item.compCount  }}</td>
           <td>
             <button class="edit-button" @click="openEditModal(item)">Edit</button>
+          </td>
+          <td>  
+            <button class="edit-button" @click="openMappingModal(item)">Mapping</button>
           </td>
         </tr>
       </tbody>
@@ -66,11 +70,21 @@
     @close="showModal = false"
     @saved="handleSaved"
   />
+
+  <AppMasterMappingModal
+    v-if="showMappingModal"
+    :item="selectedItem"
+    :availableList="availableItems"
+    :selectedList="selectedMapped"
+    @close="showMappingModal = false"
+    @submit="handleMappingSubmit"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import AppMasterModal from './AppMasterModal.vue'
+import AppMasterMappingModal from './AppMasterMappingModal.vue'
 
 const searchField = ref('appName')
 const orderBy = ref('appName')
@@ -78,6 +92,10 @@ const searchKeyword = ref('')
 const showModal = ref(false)
 const selectedItem = ref(null)
 const formMode = ref('insert')
+
+const showMappingModal = ref(false)
+const availableItems = ref([])
+const selectedMapped = ref([])
 
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -155,6 +173,47 @@ const openEditModal = (item) => {
   formMode.value = 'edit'
   selectedItem.value = { ...item }
   showModal.value = true
+}
+
+const openMappingModal = async (item) => {
+  try {
+    selectedItem.value = item
+
+    const response = await fetch(`http://localhost:8123/appmapping/AppToCompList?aid=${item.aid}`)
+    const data = await response.json()
+
+    selectedMapped.value = data.mappedList
+    availableItems.value = data.unmappedList
+
+    showMappingModal.value = true
+  } catch (error) {
+    console.error('팝업 데이터 요청 실패:', error)
+  }
+}
+
+const handleMappingSubmit = async ({ aid, addedList, removedList }) => {
+  const payload = {
+    aid,
+    addList: addedList.map(item => item.cid),
+    removeList: removedList.map(item => item.cid)
+  }
+  console.log(payload);
+  try {
+    const res = await fetch('http://localhost:8123/appmapping/AppToCompModify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+
+    if (!res.ok) throw new Error(`서버 오류: ${res.status}`)
+
+    alert('저장되었습니다')
+    showMappingModal.value = false
+    fetchAppData()
+  } catch (err) {
+    console.error('저장 실패:', err)
+    alert('저장 실패: ' + err.message)
+  }
 }
 
 const handleSaved = () => {
