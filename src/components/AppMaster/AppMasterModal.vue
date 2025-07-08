@@ -14,7 +14,11 @@
         </div>
         <div class="form-group">
           <label for="appId">App Id</label>
-          <input type="text" id="appID" v-model="form.appId" :disabled="mode === 'edit'"/>
+          <input type="text" id="appID" v-model="form.appId"/>
+        </div>
+        <div class="form-group">
+          <label for="qlikAppName">Qlik App Name</label>
+          <input type="text" id="qlikAppName" v-model="form.qlikAppName"/>
         </div>
       </div>
 
@@ -41,6 +45,7 @@ const form = reactive({
   appName: '',
   appType: '',
   appId: '',
+  qlikAppName: ''
 })
 
 watch(() => props.initialData, (newData) => {
@@ -49,11 +54,13 @@ watch(() => props.initialData, (newData) => {
     form.appName = newData.appName || '';
     form.appType = newData.appType || '';
     form.appId = newData.appId || '';
+    form.qlikAppName = newData.qlikAppName || '';
   } else {
     form.aid = '';
     form.appName = '';
     form.appType = '';
     form.appId = '';
+    form.qlikAppName = '';
   }
 }, { immediate: true, deep: true })
 
@@ -68,14 +75,16 @@ const handleSubmit = async () => {
       aid: form.aid,
       appName: form.appName,
       appType: form.appType,
-      appId: form.appId
+      appId: form.appId,
+      qlikAppName : form.qlikAppName
     }
   } else {
     url = 'http://localhost:8123/appmapping/insert'
     payload = {
       appName: form.appName,
       appType: form.appType,
-      appId: form.appId
+      appId: form.appId,
+      qlikAppName : form.qlikAppName
     }
   }
 

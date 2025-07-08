@@ -26,6 +26,7 @@
           <th>App Name</th>
           <th>App Type</th>
           <th>App ID</th>
+          <th>Qlik App Name</th>
           <th>Comp Count</th>
           <th>Edit</th>
           <th>Comp Mapping</th>
@@ -37,6 +38,7 @@
           <td>{{ item.appName  }}</td>
           <td>{{ item.appType  }}</td>
           <td>{{ item.appId  }}</td>
+          <td>{{ item.qlikAppName  }}</td>
           <td>{{ item.compCount  }}</td>
           <td>
             <button class="edit-button" @click="openEditModal(item)">Edit</button>
