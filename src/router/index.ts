@@ -32,7 +32,16 @@ const routes: Array<RouteRecordRaw> = [
     name: 'AppMaster',
     component: () => import('@/components/AppMaster/AppMaster.vue')
   },
-
+  {
+    path: '/overview',
+    name: 'Overview',
+    component: () => import('@/components/Overview/Overview.vue')
+  },
+  {
+    path: '/Indice',
+    name: 'Indice',
+    component: () => import('@/components/IndiceAdmin/IndiceAdmin.vue')
+  },
   // ...
 ]
 

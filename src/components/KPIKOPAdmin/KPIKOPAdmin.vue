@@ -33,6 +33,7 @@
           <tr>
             <th>CID</th>
             <th>Comp ID</th>
+            <th>Comp Type</th>
             <th>Name (ENG)</th>
             <th>Name (KOR)</th>
             <th>WidgetObjectId</th>
@@ -48,6 +49,7 @@
           <tr v-for="item in kpis" :key="item.cid">
             <td>{{ item.cid }}</td>
             <td>{{ item.compId }}</td>
+            <td>{{ item.compType }}</td>
             <td>{{ item.nameENG }}</td>
             <td>{{ item.nameKOR }}</td>
             <td>{{ item.widgetObjectId}}</td>
@@ -281,32 +283,32 @@ table td:nth-child(2) {
   width: 120px;
 }
 
-table th:nth-child(3), /* Name (ENG) */
-table td:nth-child(3),
-table th:nth-child(4), /* Name (KOR) */
-table td:nth-child(4) {
+table th:nth-child(4), /* Name (ENG) */
+table td:nth-child(4),
+table th:nth-child(5), /* Name (KOR) */
+table td:nth-child(5) {
   width: 350px;
 }
 
-table th:nth-child(5), /* WidgetObjectId */
-table td:nth-child(5),
-table th:nth-child(6), /* OverviewWidgetID */
-table td:nth-child(6) {
+table th:nth-child(6), /* WidgetObjectId */
+table td:nth-child(6),
+table th:nth-child(7), /* OverviewWidgetID */
+table td:nth-child(7) {
   width: 125px;
 }
 
-table th:nth-child(7), /* UOM */
-table td:nth-child(7),
-table th:nth-child(8), /* UOM Korean */
-table td:nth-child(8) {
+table th:nth-child(8), /* UOM */
+table td:nth-child(8),
+table th:nth-child(9), /* UOM Korean */
+table td:nth-child(9) {
   width: 100px;
-}
-table th:nth-child(9), /* ETL Job Name */
-table td:nth-child(9){
-  width: 250px;
 }
 table th:nth-child(10), /* ETL Job Name */
 table td:nth-child(10){
+  width: 250px;
+}
+table th:nth-child(11), /* ETL Job Name */
+table td:nth-child(11){
   width: 70px;
 }
 </style>
