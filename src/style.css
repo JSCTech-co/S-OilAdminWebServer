@@ -80,4 +80,8 @@ input, select, textarea {
   text-align: center;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 /* 제거: prefers-color-scheme 조건 */

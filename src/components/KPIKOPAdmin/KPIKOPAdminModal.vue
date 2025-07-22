@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   mode: { type: String, default: 'insert' }, // 'insert' or 'edit'
@@ -121,6 +121,14 @@ watch(() => props.initialData, (data) => {
   }
 }, { immediate: true })
 
+
+onMounted(() => {
+  document.body.classList.add('modal-open');
+});
+
+onUnmounted(() => {
+  document.body.classList.remove('modal-open');
+});
 
 const handleSubmit = async () => {
   let url = ''

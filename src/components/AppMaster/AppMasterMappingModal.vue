@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   item: Object,
@@ -204,6 +204,14 @@ const moveToAvailable = () => {
   removed.value = dedup(removed.value)
   selectedSelected.value = []
 }
+
+onMounted(() => {
+  document.body.classList.add('modal-open');
+});
+
+onUnmounted(() => {
+  document.body.classList.remove('modal-open');
+});
 
 const submit = () => {
   emit('submit', {

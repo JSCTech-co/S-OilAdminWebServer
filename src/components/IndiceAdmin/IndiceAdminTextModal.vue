@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, watch, onUnmounted } from 'vue';
 
 const props = defineProps({
   visible: {
@@ -27,6 +27,18 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close']);
+
+watch(() => props.visible, (newValue) => {
+  if (newValue) {
+    document.body.classList.add('modal-open');
+  } else {
+    document.body.classList.remove('modal-open');
+  }
+});
+
+onUnmounted(() => {
+  document.body.classList.remove('modal-open');
+});
 
 const close = () => {
   emit('close');

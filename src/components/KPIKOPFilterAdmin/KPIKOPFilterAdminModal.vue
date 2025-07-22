@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, onMounted, onUnmounted } from 'vue'
 
 const props = defineProps({
   mode: { type: String, default: 'insert' },
@@ -123,6 +123,14 @@ watch(() => props.initialData, (data) => {
     form.filterSequence = 1;
   }
 }, { immediate: true, deep: true })
+
+onMounted(() => {
+  document.body.classList.add('modal-open');
+});
+
+onUnmounted(() => {
+  document.body.classList.remove('modal-open');
+});
 
 const handleSubmit = async () => {
   const isEdit = props.mode === 'edit'

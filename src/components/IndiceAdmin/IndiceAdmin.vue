@@ -13,6 +13,15 @@
                 <input v-model="searchKeyword" placeholder="검색어 입력" @keydown.enter="applySearch" />
                 <button @click="applySearch">검색</button>
                 <button @click="resetFilters">초기화</button>
+                <div class="radio-group">
+                    <label class="radio-label">isActive:</label>
+                    <label class="radio-inline">
+                        <input type="radio" value="Y" v-model="searchActive" /> Y
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" value="N" v-model="searchActive" /> N
+                    </label>
+                </div>
             </div>
             <div class="search-right">
                 <button @click="openInsertModal">+ 등록</button>
@@ -28,11 +37,13 @@
                     <th>Name(KOR)</th>
                     <th>Name(ENG)</th>
                     <th>CurrentMonth</th>
+                    <th>Flag</th>
                     <th>SecondaryName</th>
                     <th>SecondaryValue</th>
                     <th>UOM</th>
                     <th>UOM(KOR)</th>
                     <th>ETLJobName</th>
+                    <th>isActive</th>
                     <th>Edit</th>
                 </tr>
             </thead>
@@ -40,12 +51,18 @@
                 <tr v-for="item in indiceList" :key="item.cid">
                     <td>{{ item.compId }}</td>
                     <td>{{ item.compType }}</td>
-                    <td>{{ item.nameKOR }}</td>
-                    <td>{{ item.nameENG }}</td>
+                    <td>{{ item.nameKor }}</td>
+                    <td>{{ item.nameEng }}</td>
                     <td>
                         <div class="long-text-cell">
                             <span class="long-text-content">{{ item.currentMonth }}</span>
                             <button v-if="item.currentMonth" class="btn-view-more" @click="openTextModal('CurrentMonth', item.currentMonth)">...</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="long-text-cell">
+                            <span class="long-text-content">{{ item.flag }}</span>
+                            <button v-if="item.flag" class="btn-view-more" @click="openTextModal('Flag', item.flag)">...</button>
                         </div>
                     </td>
                     <td>{{ item.secondaryName }}</td>
@@ -58,9 +75,11 @@
                     <td>{{ item.uom }}</td>
                     <td>{{ item.uomKorean }}</td>
                     <td class="indice-etlJobName">{{ item.etljobName }}</td>
+                    <td>{{ item.isActive }}</td>
                     <td>
                         <button class="edit-button" @click="openEditModal(item)">Edit</button>
                     </td>
+                    
                 </tr>
             </tbody>
         </table>
@@ -81,16 +100,26 @@
             :content="modalContent"
             @close="closeTextModal"
         />
+
+        <IndiceAdminModal
+            v-if="showModal"
+            :mode="formMode"
+            :initial-data="selectedItem"
+            @close="closeModal"
+            @saved="handleSave"
+        />
     </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import IndiceAdminTextModal from './IndiceAdminTextModal.vue'
+import IndiceAdminModal from './IndiceAdminModal.vue'
 
 const isTextModalVisible = ref(false)
 const modalTitle = ref('')
 const modalContent = ref('')
+const searchActive = ref('Y')
 
 const openTextModal = (title, content) => {
   modalTitle.value = title
@@ -105,18 +134,69 @@ const closeTextModal = () => {
 const searchField = ref('compId')
 const orderBy = ref('compId')
 const searchKeyword = ref('')
+
+const applySearch = () => {
+  currentPage.value = 1;
+  fetchData();
+};
+
+const resetFilters = () => {
+  searchField.value = 'compId';
+  searchKeyword.value = '';
+  searchActive.value = 'Y';
+  currentPage.value = 1;
+  fetchData();
+};
 const showModal = ref(false)
 const formMode = ref('insert')
+const selectedItem = ref(null)
 
 const currentPage = ref(1)
 const pageSize = ref(10)
 const totalPages = ref(1)
 
+const visiblePages = computed(() => {
+  const pages = []
+  let startPage = Math.max(1, currentPage.value - 2)
+  let endPage = Math.min(totalPages.value, currentPage.value + 2)
+
+  if (startPage === 1) {
+    endPage = Math.min(totalPages.value, 5)
+  }
+  if (endPage === totalPages.value) {
+    startPage = Math.max(1, totalPages.value - 4)
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
+  }
+  return pages
+})
+
+const goToPage = (page) => {
+  currentPage.value = page
+  fetchData()
+}
+
+const goToPrevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+    fetchData()
+  }
+}
+
+const goToNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+    fetchData()
+  }
+}
+
 const indiceList = ref([])
 
 const fetchData = async () => {
     try{
-        let url = `http://localhost:8123/indice/select?pageNo=${currentPage.value}&pageSize=${pageSize.value}`
+        let url = `http://localhost:8123/indice/select?pageNo=${currentPage.value}&pageSize=${pageSize.value}&isActive=${searchActive.value}`
 
         if (searchKeyword.value.trim()) {
         url += `&searchType=${searchField.value}&searchKeyword=${encodeURIComponent(searchKeyword.value)}`
@@ -132,6 +212,27 @@ const fetchData = async () => {
 }
 
 onMounted(fetchData)
+
+const openInsertModal = () => {
+  formMode.value = 'insert'
+  selectedItem.value = null
+  showModal.value = true
+}
+
+const openEditModal = (item) => {
+  formMode.value = 'edit'
+  selectedItem.value = item
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
+
+const handleSave = () => {
+  fetchData()
+  closeModal()
+}
 </script>
 <style scope>
 .container {
@@ -169,7 +270,7 @@ onMounted(fetchData)
   border: 1px solid #ddd;
   padding: 8px 12px;
   text-align: left;
-  font-size: 13px;
+  font-size: 11px;
 }
 .edit-button {
   color: #1d4ed8;
@@ -226,5 +327,9 @@ onMounted(fetchData)
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 150px;
+}
+.radio-group{
+    display: inline-flex;
+    margin-left : 15px;
 }
 </style>
