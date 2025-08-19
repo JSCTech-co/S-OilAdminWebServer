@@ -114,7 +114,7 @@ watch(() => props.initialData, (newData) => {
     form.compId = '';
     form.compType = 'Indice';
     form.nameKor = '';
-    form.nameEng = '';s
+    form.nameEng = '';
     form.currentMonth = '';
     form.flag = '';
     form.secondaryName = '';
