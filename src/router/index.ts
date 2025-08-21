@@ -42,6 +42,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Indice',
     component: () => import('@/components/IndiceAdmin/IndiceAdmin.vue')
   },
+  {
+    path: '/RoleAdmin',
+    name: 'RoleAdmin',
+    component: () => import('@/components/RoleAdmin/RoleAdmin.vue')
+  },
   // ...
 ]
 
