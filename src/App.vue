@@ -7,7 +7,6 @@
 
 <script setup>
 import Header from "./layout/HeaderView.vue"
-import KPOKOPAdmin from './components/KPIKOPAdmin/KPIKOPAdmin.vue'
 </script>
 
 <style>

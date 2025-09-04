@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory} from 'vue-router'
 import type {RouteRecordRaw } from 'vue-router'
+import { ensureQlikSession } from '@/util/qlikLoader'
+
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -47,12 +49,31 @@ const routes: Array<RouteRecordRaw> = [
     name: 'RoleAdmin',
     component: () => import('@/components/RoleAdmin/RoleAdmin.vue')
   },
+  {
+    path: '/Main',
+    name: 'Main',
+    component: () => import('@/components/Main/Main.vue'),
+    meta: { requiresQlik : true }
+  },
   // ...
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach(async (to, from, next)=> {
+  if(to.meta.requiresQlik){
+    try{
+      await ensureQlikSession();
+      next();
+    }catch(e){
+      console.error('Qlik Session Fail');
+    }
+  }else{
+    next();
+  }
 })
 
 export default router

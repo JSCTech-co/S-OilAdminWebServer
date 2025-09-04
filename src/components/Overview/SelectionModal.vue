@@ -59,7 +59,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  console.log('SelectionModal received items:', props.items);
+  //console.log('SelectionModal received items:', props.items);
 });
 
 const emit = defineEmits(['close', 'select']);

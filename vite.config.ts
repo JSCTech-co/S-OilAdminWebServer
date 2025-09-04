@@ -15,6 +15,13 @@ export default defineConfig({
     }
   },
   server: {
-    https: false
+    https: true,
+    // proxy: {
+    //   '/qlikticket': {
+    //     target: 'https://dev.jsct.site',
+    //     changeOrigin: true,
+    //     secure: false
+    //   }
+    // }
   }
 })
